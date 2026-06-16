@@ -44,29 +44,6 @@ export default function OrdersPage() {
       });
   }, []);
 
-  if (!isLoggedIn) {
-    return (
-      <ProtectedRoute>
-        <main className="min-h-screen flex items-center justify-center">
-          <div className="bg-white p-10 rounded-3xl shadow-lg text-center">
-
-            <h1 className="text-3xl font-black mb-5">
-              Login Required
-            </h1>
-
-            <Link
-              href="/login"
-              className="bg-black text-white px-6 py-3 rounded-xl"
-            >
-              Go To Login
-            </Link>
-
-          </div>
-        </main>
-      </ProtectedRoute>
-    );
-  }
-
   return (
     <ProtectedRoute>
       <main className="min-h-screen bg-gray-100 p-10">
@@ -75,9 +52,9 @@ export default function OrdersPage() {
 
           <Link
             href="/"
-            className="inline-block mb-10 bg-black text-white px-6 py-3 rounded-2xl"
+            className="inline-block mb-8 bg-black text-white px-6 py-3 rounded-xl"
           >
-            ← Back To Home
+            ← Back Home
           </Link>
 
           <h1 className="text-4xl font-black mb-8">
@@ -85,75 +62,53 @@ export default function OrdersPage() {
           </h1>
 
           {loading ? (
-
-            <div className="bg-white p-8 rounded-3xl text-center">
-              Loading Orders...
+            <div className="bg-white p-8 rounded-3xl shadow">
+              Loading...
             </div>
-
           ) : orders.length === 0 ? (
-
-            <div className="bg-white p-8 rounded-3xl text-center">
-
-              <h2 className="text-2xl font-bold">
-                No Orders Yet
-              </h2>
-
-              <Link
-                href="/"
-                className="text-violet-600 mt-4 block"
-              >
-                Start Shopping
-              </Link>
-
+            <div className="bg-white p-8 rounded-3xl shadow">
+              No Orders Found
             </div>
-
           ) : (
-
             <div className="space-y-6">
 
               {orders.map((order) => (
 
-                <div
+                <Link
                   key={order.id}
-                  className="bg-white p-6 rounded-3xl shadow-lg"
+                  href={`/orders/${order.id}`}
                 >
 
-                  <div className="flex justify-between mb-4">
+                  <div className="bg-white p-6 rounded-3xl shadow-lg hover:shadow-xl transition cursor-pointer">
 
-                    <div>
+                    <h2 className="text-2xl font-bold">
+                      {order.title || `Order #${order.id}`}
+                    </h2>
 
-                      <Link
-                        href={`/orders/${order.id}`}
-                        className="font-bold text-blue-600 text-2xl"
-                      >
-                        {order.title || `Order #${order.id}`}
-                      </Link>
-
-                    </div>
-
-                    <p className="text-gray-500">
+                    <p className="text-gray-500 mt-2">
                       {new Date(
                         order.created_at
                       ).toLocaleString()}
                     </p>
 
-                  </div>
-
-                  <div className="border-t pt-4">
-
-                    <p className="text-2xl font-black">
-                      Total:
+                    <p className="text-3xl font-black mt-4">
                       ${order.total_price}
+                    </p>
+
+                    <p className="mt-2">
+                      Status:
+                      <span className="ml-2 font-bold text-green-600">
+                        {order.status || "Pending"}
+                      </span>
                     </p>
 
                   </div>
 
-                </div>
+                </Link>
 
               ))}
 
             </div>
-
           )}
 
         </div>

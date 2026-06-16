@@ -18,6 +18,9 @@ export default function AuthProvider({
   const [user, setUser] =
     useState(null);
 
+  const [loading, setLoading] =
+    useState(true);
+
   useEffect(() => {
     const token =
       localStorage.getItem(
@@ -42,8 +45,15 @@ export default function AuthProvider({
           })
           .catch((err) =>
             console.error(err)
-          );
+          )
+          .finally(() => {
+            setLoading(false);
+          });
+      } else {
+        setLoading(false);
       }
+    } else {
+      setLoading(false);
     }
   }, []);
 
@@ -70,41 +80,38 @@ export default function AuthProvider({
   };
 
   const logout = () => {
-      localStorage.removeItem(
-        "access_token"
-      );
+    localStorage.removeItem(
+      "access_token"
+    );
 
-      localStorage.removeItem(
-        "refresh_token"
-      );
+    localStorage.removeItem(
+      "refresh_token"
+    );
 
-      localStorage.removeItem(
-        "user_id"
-      );
+    localStorage.removeItem(
+      "user_id"
+    );
 
-      localStorage.removeItem(
-        "cart"
-      );
+    localStorage.removeItem(
+      "cart"
+    );
 
-      localStorage.removeItem(
-        "wishlist"
-      );
+    localStorage.removeItem(
+      "wishlist"
+    );
 
-      setUser(null);
-      setIsLoggedIn(false);
+    setUser(null);
+    setIsLoggedIn(false);
 
-      window.location.href = "/";
-    };
-
-
-
-
+    window.location.href = "/";
+  };
 
   return (
     <AuthContext.Provider
       value={{
         isLoggedIn,
         user,
+        loading,
         login,
         logout,
       }}

@@ -29,13 +29,14 @@ export default function OrderDetailsPage() {
         console.error(err);
         setLoading(false);
       });
+
   }, [params?.id]);
 
   return (
     <ProtectedRoute>
       <main className="min-h-screen bg-gray-100 p-10">
 
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
 
           <Link
             href="/orders"
@@ -44,8 +45,8 @@ export default function OrderDetailsPage() {
             ← Back To Orders
           </Link>
 
-          <h1 className="text-4xl font-black mb-8">
-            Order #{params.id}
+          <h1 className="text-4xl font-black mb-10">
+            Order Details
           </h1>
 
           {loading ? (
@@ -57,18 +58,18 @@ export default function OrderDetailsPage() {
           ) : items.length === 0 ? (
 
             <div className="bg-white p-8 rounded-3xl shadow">
-              No Items Found
+              No Products Found
             </div>
 
           ) : (
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
               {items.map((item) => (
 
                 <div
                   key={item.id}
-                  className="bg-white rounded-3xl shadow-lg overflow-hidden"
+                  className="bg-white rounded-3xl overflow-hidden shadow-lg"
                 >
 
                   {item.image && (
@@ -81,29 +82,28 @@ export default function OrderDetailsPage() {
 
                   <div className="p-6">
 
-                    <h2 className="text-2xl font-bold mb-3">
+                    <h2 className="text-2xl font-bold">
                       {item.product_name}
                     </h2>
 
-                    <p className="text-lg">
+                    <p className="mt-3">
                       Price:
-                      {" "}
-                      $
-                      {item.price}
+                      <span className="font-bold ml-2">
+                        ${item.price}
+                      </span>
                     </p>
 
-                    <p className="text-lg">
+                    <p>
                       Quantity:
-                      {" "}
-                      {item.quantity}
+                      <span className="font-bold ml-2">
+                        {item.quantity}
+                      </span>
                     </p>
 
                     <p className="text-2xl font-black mt-4">
-                      Total:
-                      {" "}
                       $
                       {Number(item.price) *
-                        item.quantity}
+                        Number(item.quantity)}
                     </p>
 
                   </div>

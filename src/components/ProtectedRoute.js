@@ -14,14 +14,33 @@ export default function ProtectedRoute({
 }) {
   const router = useRouter();
 
-  const { isLoggedIn } =
-    useContext(AuthContext);
+  const {
+    isLoggedIn,
+    loading,
+  } = useContext(AuthContext);
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (
+      !loading &&
+      !isLoggedIn
+    ) {
       router.push("/login");
     }
-  }, [isLoggedIn, router]);
+  }, [
+    loading,
+    isLoggedIn,
+    router,
+  ]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <h1 className="text-3xl font-bold">
+          Loading...
+        </h1>
+      </div>
+    );
+  }
 
   if (!isLoggedIn) {
     return (
