@@ -72,47 +72,72 @@ const relatedProducts = products.filter(
   );
 
 
-
 const submitReview = async () => {
+
   const userId =
     localStorage.getItem("user_id");
 
-    if (!userId) {
-      alert(
-        "Please Login"
+  if (!userId) {
+    alert("Please Login");
+    return;
+  }
+
+  if (!comment.trim()) {
+    alert("Write a review");
+    return;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        "http://127.0.0.1:8000/api/reviews/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            user: Number(userId),
+            product: Number(product.id),
+            rating: Number(reviewRating),
+            comment: comment,
+          }),
+        }
       );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      console.log(data);
+      alert("Review Failed");
       return;
     }
 
-  const response =
-    await fetch(
-      "http://127.0.0.1:8000/api/reviews/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-        body: JSON.stringify({
-          user: Number(userId),
-          product: product.id,
-          rating:
-            reviewRating,
-          comment:
-            comment,
-        }),
-      }
-    );
-
-  const data =
-    await response.json();
-    setReviews([
-      ...reviews,
+    setReviews((prev) => [
       data,
+      ...prev,
     ]);
 
     setComment("");
-  };
+    setReviewRating(5);
+
+    alert(
+      "Review Added Successfully"
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Error");
+
+  }
+
+};
+
 
 
 
@@ -202,7 +227,7 @@ return ( <main className="min-h-screen bg-gray-100 py-10 px-5">
  
 
 
-
+{/* Wishlist section */}
 
         <div className="mt-8 flex flex-col gap-4">
 
@@ -244,7 +269,7 @@ return ( <main className="min-h-screen bg-gray-100 py-10 px-5">
     </div>
 
 
-
+{/* Reviews section */}
 
     <div className="mt-10">
 
@@ -311,31 +336,42 @@ return ( <main className="min-h-screen bg-gray-100 py-10 px-5">
         <div className="mt-16">
 
             <h2 className="text-3xl font-black mb-6">
-              Reviews
+              Reviews ({reviews.length})
             </h2>
 
             {reviews.length === 0 ? (
-              <p>
-                No Reviews Yet
-              </p>
+
+              <p>No Reviews Yet</p>
+
             ) : (
-              reviews.map(
-                (review) => (
-                  <div
-                    key={review.id}
-                    className="bg-white p-5 rounded-2xl mb-4"
-                  >
-                    <p className="font-bold">
-                      ⭐
-                      {review.rating}/5
+
+              reviews.map((review) => (
+
+                <div
+                  key={review.id}
+                  className="bg-white p-5 rounded-2xl mb-4 shadow"
+                >
+
+                  <div className="flex justify-between items-center">
+
+                    <p className="font-bold text-violet-600">
+                      👤 {review.username || `User ${review.user}`}
                     </p>
 
-                    <p className="mt-2">
-                      {review.comment}
+                    <p className="font-bold text-yellow-500">
+                      ⭐ {review.rating}/5
                     </p>
+
                   </div>
-                )
-              )
+
+                  <p className="mt-3 text-gray-700">
+                    {review.comment}
+                  </p>
+
+                </div>
+
+              ))
+
             )}
 
           </div>

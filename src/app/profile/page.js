@@ -1,133 +1,210 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import ProtectedRoute from "../../components/ProtectedRoute";
+import { useContext } from "react";
 import Link from "next/link";
 
+import ProtectedRoute from "../../components/ProtectedRoute";
+import { AuthContext } from "../../context/AuthContext";
+import { CartContext } from "../../context/CartContext";
+import { WishlistContext } from "../../context/WishlistContext";
+import { OrderContext } from "../../context/OrderContext";
+
 export default function ProfilePage() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const userId =
-      localStorage.getItem("user_id");
+const { user, logout } =
+useContext(AuthContext);
 
-    if (!userId) {
-      setLoading(false);
-      return;
-    }
+const { cart } =
+useContext(CartContext);
 
-    fetch(
-      `http://127.0.0.1:8000/api/profile/${userId}/`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setUser(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setLoading(false);
-      });
-  }, []);
+const { wishlist } =
+useContext(WishlistContext);
 
-  const handleLogout = () => {
-    localStorage.removeItem(
-      "access_token"
-    );
+const { orders } =
+useContext(OrderContext);
 
-    localStorage.removeItem(
-      "refresh_token"
-    );
+return ( <ProtectedRoute>
 
-    localStorage.removeItem(
-      "user_id"
-    );
 
-    window.location.href = "/login";
-  };
+  <main className="min-h-screen bg-gray-100 p-10">
 
-  if (loading) {
-    return (
-      <main className="min-h-screen flex items-center justify-center">
-        <h1 className="text-3xl font-bold">
-          Loading...
-        </h1>
-      </main>
-    );
-  }
+    <div className="max-w-5xl mx-auto">
 
-  if (!user) {
-    return (
-      <main className="min-h-screen flex flex-col items-center justify-center gap-5">
-        <h1 className="text-3xl font-bold">
-          Please Login First
-        </h1>
+      <div className="bg-white rounded-3xl shadow-lg p-10">
 
-        <Link
-          href="/login"
-          className="bg-black text-white px-6 py-3 rounded-xl"
-        >
-          Login
-        </Link>
-      </main>
-    );
-  }
+        <div className="flex flex-col md:flex-row items-center gap-8 mb-10">
 
-  return (
-    <ProtectedRoute>
-    <main className="min-h-screen bg-gray-100 p-10">
+          <div className="w-28 h-28 rounded-full bg-violet-600 flex items-center justify-center">
 
-      <div className="max-w-3xl mx-auto bg-white p-10 rounded-3xl shadow-lg">
+            <span className="text-white text-5xl font-black">
+              {user?.username?.charAt(0)?.toUpperCase()}
+            </span>
 
-        <h1 className="text-5xl font-black mb-10">
-          My Profile
-        </h1>
-
-        <div className="space-y-6">
-
-          <div>
-            <p className="text-gray-500">
-              User ID
-            </p>
-
-            <h2 className="text-2xl font-bold">
-              {user.id}
-            </h2>
           </div>
 
           <div>
-            <p className="text-gray-500">
-              Username
+
+            <h1 className="text-5xl font-black">
+              {user?.username}
+            </h1>
+
+            <p className="text-gray-500 text-lg mt-2">
+              {user?.email}
             </p>
 
-            <h2 className="text-2xl font-bold">
-              {user.username}
-            </h2>
-          </div>
-
-          <div>
-            <p className="text-gray-500">
-              Email
-            </p>
-
-            <h2 className="text-2xl font-bold">
-              {user.email}
-            </h2>
           </div>
 
         </div>
 
-        <button
-          onClick={handleLogout}
-          className="mt-10 bg-red-500 text-white px-6 py-3 rounded-xl"
-        >
-          Logout
-        </button>
+        <div className="grid md:grid-cols-3 gap-6 mb-10">
+
+          <div className="bg-violet-100 p-6 rounded-2xl">
+
+            <h3 className="text-gray-600">
+              Total Orders
+            </h3>
+
+            <p className="text-4xl font-black mt-2">
+              {orders?.length || 0}
+            </p>
+
+          </div>
+
+          <div className="bg-pink-100 p-6 rounded-2xl">
+
+            <h3 className="text-gray-600">
+              Wishlist Items
+            </h3>
+
+            <p className="text-4xl font-black mt-2">
+              {wishlist?.length || 0}
+            </p>
+
+          </div>
+
+          <div className="bg-blue-100 p-6 rounded-2xl">
+
+            <h3 className="text-gray-600">
+              Cart Items
+            </h3>
+
+            <p className="text-4xl font-black mt-2">
+              {cart?.length || 0}
+            </p>
+
+          </div>
+
+        </div>
+
+        <div className="bg-gray-50 p-8 rounded-2xl">
+
+          <h2 className="text-2xl font-black mb-6">
+            Account Information
+          </h2>
+
+          <div className="space-y-5">
+
+            <div>
+
+              <p className="text-gray-500">
+                Username
+              </p>
+
+              <h3 className="text-2xl font-bold">
+                {user?.username}
+              </h3>
+
+            </div>
+
+            <div>
+
+              <p className="text-gray-500">
+                Email
+              </p>
+
+              <h3 className="text-2xl font-bold">
+                {user?.email}
+              </h3>
+
+            </div>
+
+            <div>
+
+              <p className="text-gray-500">
+                User ID
+              </p>
+
+              <h3 className="text-2xl font-bold">
+                {user?.id}
+              </h3>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div className="mt-10">
+
+          <h2 className="text-2xl font-black mb-5">
+            Quick Actions
+          </h2>
+
+          <div className="flex flex-wrap gap-4">
+
+            <Link
+              href="/orders"
+              className="bg-black text-white px-6 py-3 rounded-xl"
+            >
+              My Orders
+            </Link>
+
+            <Link
+              href="/wishlist"
+              className="bg-pink-500 text-white px-6 py-3 rounded-xl"
+            >
+              Wishlist
+            </Link>
+
+            <Link
+              href="/cart"
+              className="bg-blue-500 text-white px-6 py-3 rounded-xl"
+            >
+              Cart
+            </Link>
+
+            <Link
+              href="/dashboard"
+              className="bg-violet-600 text-white px-6 py-3 rounded-xl"
+            >
+              Dashboard
+            </Link>
+            <Link
+              href="/profile/edit"
+              className="bg-green-600 text-white px-6 py-3 rounded-xl"
+            >
+              Edit Profile
+            </Link>
+
+            <button
+              onClick={logout}
+              className="bg-red-500 text-white px-6 py-3 rounded-xl"
+            >
+              Logout
+            </button>
+
+          </div>
+
+        </div>
 
       </div>
 
-    </main>
-    </ProtectedRoute>
-  );
+    </div>
+
+  </main>
+
+</ProtectedRoute>
+
+
+);
 }

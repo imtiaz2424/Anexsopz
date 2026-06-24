@@ -27,6 +27,6 @@ urlpatterns = [
     path("register/", register_user, name="register",),
     path("profile/<int:user_id>/", profile, name="profile",),
     path("", include(router.urls),),
-    path("dashboard-stats/", dashboard_stats),
+    path("dashboard-stats/", dashboard_stats),    
 
 ]

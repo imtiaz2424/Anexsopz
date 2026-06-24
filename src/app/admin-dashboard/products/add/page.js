@@ -141,15 +141,44 @@ export default function AddProductPage() {
             required
           />
 
-          <input
-            type="text"
+          <select
             name="category"
-            placeholder="Category"
             value={form.category}
             onChange={handleChange}
             className="w-full border p-4 rounded-xl"
-            required
-          />
+          >
+            <option value="">
+              Select Category
+            </option>
+
+            <option value="Electronics">
+              Electronics
+            </option>
+
+            <option value="Fashion">
+              Fashion
+            </option>
+
+            <option value="Shoes">
+              Shoes
+            </option>
+
+            <option value="Watch">
+              Watch
+            </option>
+
+            <option value="Laptop">
+              Laptop
+            </option>
+
+            <option value="Phone">
+              Phone
+            </option>
+
+            <option value="Accessories">
+              Accessories
+            </option>
+          </select>
 
           <input
             type="number"
