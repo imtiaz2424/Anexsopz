@@ -10,6 +10,7 @@ register_user,
 profile,
 ReviewViewSet,
 dashboard_stats,
+ProfileViewSet,
 )
 
 router = DefaultRouter()
@@ -21,6 +22,7 @@ router.register("wishlist", WishlistViewSet,
     basename="wishlist"
 )
 router.register("reviews", ReviewViewSet)
+router.register(r'profiles', ProfileViewSet)
 
 urlpatterns = [
 

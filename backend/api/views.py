@@ -17,6 +17,7 @@ from .models import (
     OrderItem,
     Wishlist,
     Review,
+    Profile,
 )
 
 from .serializers import (
@@ -25,6 +26,7 @@ from .serializers import (
     OrderItemSerializer,
     WishlistSerializer,
     ReviewSerializer,
+    ProfileSerializer,
 )
 
 
@@ -153,6 +155,26 @@ class ReviewViewSet(
 
 
 
+class ProfileViewSet(
+    viewsets.ModelViewSet
+):
+
+    queryset = Profile.objects.all()
+
+    serializer_class = (
+        ProfileSerializer
+    )
+
+    parser_classes = [
+        MultiPartParser,
+        FormParser,
+    ]
+
+    permission_classes = [
+        AllowAny
+    ]
+
+
 
 @api_view(["POST"])
 def register_user(request):
@@ -168,6 +190,7 @@ def register_user(request):
         "password"
     )
 
+   
     if (
         not username
         or not email
@@ -204,9 +227,13 @@ def register_user(request):
         )
 
     user = User.objects.create_user(
-        username=username,
-        email=email,
-        password=password,
+    username=username,
+    email=email,
+    password=password,
+    )
+
+    Profile.objects.create(
+        user=user
     )
 
     return Response(

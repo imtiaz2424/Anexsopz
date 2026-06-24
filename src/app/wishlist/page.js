@@ -1,31 +1,32 @@
 "use client";
 
-import { useContext, } from "react";
+import { useContext, useEffect } from "react";
 import Link from "next/link";
 import { WishlistContext, } from "../../context/WishlistContext";
 import ProtectedRoute from "../../components/ProtectedRoute";
 
 export default function WishlistPage() {
 
-  const {
-    wishlist,
-  } = useContext(
-    WishlistContext
-  );
+  const {wishlist, setWishlist,} = useContext(WishlistContext);
 
+  useEffect(() => {
 
   const userId =
-  localStorage.getItem(
-    "user_id"
-  );
+    localStorage.getItem("user_id");
 
-fetch(
-  `http://127.0.0.1:8000/api/wishlist/?user=${userId}`
-)
-  .then((res) => res.json())
-  .then((data) => {
-    setWishlist(data);
-  });
+  if (!userId) return;
+
+  fetch(
+    `http://127.0.0.1:8000/api/wishlist/?user=${userId}`
+  )
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      setWishlist(data);
+    });
+
+}, []);
+
 
   return (
     <ProtectedRoute>
@@ -70,19 +71,19 @@ fetch(
                   <div className="bg-white rounded-3xl overflow-hidden shadow-lg">
 
                     <img
-                      src={product.image}
-                      alt={product.name}
+                      src={product.product_image}
+                      alt={product.product_name}
                       className="w-full h-72 object-cover"
                     />
 
                     <div className="p-5">
 
                       <h2 className="text-2xl font-bold">
-                        {product.name}
+                        {product.product_name}
                       </h2>
 
                       <p className="text-3xl font-black mt-2">
-                        ${product.price}
+                        ${product.product_price}
                       </p>
 
                     </div>

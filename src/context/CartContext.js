@@ -88,6 +88,33 @@ export default function CartProvider({
     );
   };
 
+const increaseQuantity = (
+  productId
+) => {
+
+  setCart(
+    cart.map((item) => {
+
+      if (
+        item.id === productId
+      ) {
+
+        return {
+          ...item,
+          quantity:
+            item.quantity + 1,
+        };
+
+      }
+
+      return item;
+
+    })
+  );
+
+};
+
+
   const decreaseQuantity = (
     productId
   ) => {
@@ -126,6 +153,7 @@ export default function CartProvider({
         setCart,
         addToCart,
         removeFromCart,
+        increaseQuantity,
         decreaseQuantity,
         clearCart,
       }}

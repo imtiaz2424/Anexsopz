@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import Link from "next/link";
 
 import ProtectedRoute from "../../components/ProtectedRoute";
@@ -10,7 +10,6 @@ import { WishlistContext } from "../../context/WishlistContext";
 import { OrderContext } from "../../context/OrderContext";
 
 export default function ProfilePage() {
-
 const { user, logout } =
 useContext(AuthContext);
 
@@ -23,8 +22,44 @@ useContext(WishlistContext);
 const { orders } =
 useContext(OrderContext);
 
-return ( <ProtectedRoute>
+const [profile, setProfile] =
+useState(null);
 
+useEffect(() => {
+
+  const userId =
+    localStorage.getItem(
+      "user_id"
+    );
+
+  if (!userId) return;
+
+  fetch(
+    "http://127.0.0.1:8000/api/profiles/"
+  )
+    .then((res) => res.json())
+    .then((data) => {
+
+      const userProfile =
+        data.find(
+          (p) =>
+            p.user ===
+            Number(userId)
+        );
+
+      if (userProfile) {
+        setProfile(
+          userProfile
+        );
+      }
+
+    });
+
+}, []);
+
+
+
+return ( <ProtectedRoute>
 
   <main className="min-h-screen bg-gray-100 p-10">
 
@@ -34,22 +69,52 @@ return ( <ProtectedRoute>
 
         <div className="flex flex-col md:flex-row items-center gap-8 mb-10">
 
-          <div className="w-28 h-28 rounded-full bg-violet-600 flex items-center justify-center">
+          <div className="w-32 h-32 rounded-full overflow-hidden bg-violet-600 shadow-lg">
 
-            <span className="text-white text-5xl font-black">
-              {user?.username?.charAt(0)?.toUpperCase()}
-            </span>
+            {profile?.image ? (
+
+              <img
+                src={
+                  profile.image.startsWith(
+                    "http"
+                  )
+                    ? profile.image
+                    : `http://127.0.0.1:8000${profile.image}`
+                }
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+
+            ) : (
+
+              <div className="w-full h-full flex items-center justify-center">
+
+                <span className="text-white text-5xl font-black">
+
+                  {user?.username
+                    ?.charAt(0)
+                    ?.toUpperCase()}
+
+                </span>
+
+              </div>
+
+            )}
 
           </div>
 
           <div>
 
             <h1 className="text-5xl font-black">
+
               {user?.username}
+
             </h1>
 
             <p className="text-gray-500 text-lg mt-2">
+
               {user?.email}
+
             </p>
 
           </div>
@@ -65,7 +130,9 @@ return ( <ProtectedRoute>
             </h3>
 
             <p className="text-4xl font-black mt-2">
+
               {orders?.length || 0}
+
             </p>
 
           </div>
@@ -77,7 +144,9 @@ return ( <ProtectedRoute>
             </h3>
 
             <p className="text-4xl font-black mt-2">
+
               {wishlist?.length || 0}
+
             </p>
 
           </div>
@@ -89,7 +158,9 @@ return ( <ProtectedRoute>
             </h3>
 
             <p className="text-4xl font-black mt-2">
+
               {cart?.length || 0}
+
             </p>
 
           </div>
@@ -99,7 +170,9 @@ return ( <ProtectedRoute>
         <div className="bg-gray-50 p-8 rounded-2xl">
 
           <h2 className="text-2xl font-black mb-6">
+
             Account Information
+
           </h2>
 
           <div className="space-y-5">
@@ -111,7 +184,9 @@ return ( <ProtectedRoute>
               </p>
 
               <h3 className="text-2xl font-bold">
+
                 {user?.username}
+
               </h3>
 
             </div>
@@ -123,7 +198,9 @@ return ( <ProtectedRoute>
               </p>
 
               <h3 className="text-2xl font-bold">
+
                 {user?.email}
+
               </h3>
 
             </div>
@@ -135,7 +212,9 @@ return ( <ProtectedRoute>
               </p>
 
               <h3 className="text-2xl font-bold">
+
                 {user?.id}
+
               </h3>
 
             </div>
@@ -147,7 +226,9 @@ return ( <ProtectedRoute>
         <div className="mt-10">
 
           <h2 className="text-2xl font-black mb-5">
+
             Quick Actions
+
           </h2>
 
           <div className="flex flex-wrap gap-4">
@@ -174,11 +255,12 @@ return ( <ProtectedRoute>
             </Link>
 
             <Link
-              href="/dashboard"
+              href="/admin-dashboard"
               className="bg-violet-600 text-white px-6 py-3 rounded-xl"
             >
               Dashboard
             </Link>
+
             <Link
               href="/profile/edit"
               className="bg-green-600 text-white px-6 py-3 rounded-xl"

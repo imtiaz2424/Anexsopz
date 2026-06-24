@@ -109,7 +109,7 @@ return ( <main className="min-h-screen bg-gray-100">
     <div className="max-w-7xl mx-auto px-8 text-center">
 
       <h1 className="text-6xl font-black mb-4">
-        Subecha Store
+        Anexsopz Store
       </h1>
 
       <p className="text-xl">

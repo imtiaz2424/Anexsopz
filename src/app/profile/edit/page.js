@@ -1,104 +1,183 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
-import { AuthContext } from "../../../context/AuthContext";
-import ProtectedRoute from "../../../components/ProtectedRoute";
 
 export default function EditProfilePage() {
 
-const router = useRouter();
+  const router = useRouter();
 
-const { user } =
-useContext(AuthContext);
+  const [profile, setProfile] =
+    useState(null);
 
-const [username, setUsername] =
-useState(user?.username || "");
+  const [image, setImage] =
+    useState(null);
 
-const [email, setEmail] =
-useState(user?.email || "");
+  const [loading, setLoading] =
+    useState(false);
 
-const handleSubmit = (e) => {
+  useEffect(() => {
 
+    const userId =
+      localStorage.getItem(
+        "user_id"
+      );
 
-e.preventDefault();
+    if (!userId) return;
 
-const updatedUser = {
-  ...user,
-  username,
-  email,
-};
+    fetch(
+      "http://127.0.0.1:8000/api/profiles/"
+    )
+      .then((res) => res.json())
+      .then((data) => {
 
-localStorage.setItem(
-  "user",
-  JSON.stringify(updatedUser)
-);
+        const userProfile =
+          data.find(
+            (p) =>
+              p.user ===
+              Number(userId)
+          );
 
-alert(
-  "Profile Updated Successfully"
-);
+        if (userProfile) {
+          setProfile(
+            userProfile
+          );
+        }
 
-router.push("/profile");
+      });
 
-window.location.reload();
+  }, []);
 
+  const handleSubmit =
+    async (e) => {
 
-};
+      e.preventDefault();
 
-return (
+      if (!profile) return;
 
+      try {
 
-<ProtectedRoute>
+        setLoading(true);
 
-  <main className="min-h-screen bg-gray-100 p-10">
+        const formData =
+          new FormData();
 
-    <div className="max-w-3xl mx-auto bg-white p-10 rounded-3xl shadow-lg">
+        if (image) {
+          formData.append(
+            "image",
+            image
+          );
+        }
 
-      <h1 className="text-4xl font-black mb-8">
-        Edit Profile
-      </h1>
+        const response =
+          await fetch(
+            `http://127.0.0.1:8000/api/profiles/${profile.id}/`,
+            {
+              method: "PATCH",
+              body: formData,
+            }
+          );
 
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-5"
-      >
+        if (!response.ok) {
 
-        <input
-          type="text"
-          value={username}
-          onChange={(e) =>
-            setUsername(e.target.value)
-          }
-          className="w-full border p-4 rounded-xl"
-          placeholder="Username"
-        />
+          alert(
+            "Upload Failed"
+          );
 
-        <input
-          type="email"
-          value={email}
-          onChange={(e) =>
-            setEmail(e.target.value)
-          }
-          className="w-full border p-4 rounded-xl"
-          placeholder="Email"
-        />
+          return;
+        }
 
-        <button
-          type="submit"
-          className="w-full bg-violet-600 text-white py-4 rounded-xl"
+        alert(
+          "Profile Updated Successfully"
+        );
+
+        router.push(
+          "/profile"
+        );
+
+      } catch (error) {
+
+        console.log(error);
+
+      } finally {
+
+        setLoading(false);
+
+      }
+
+    };
+
+  if (!profile) {
+
+    return (
+      <div className="p-10">
+        Loading...
+      </div>
+    );
+
+  }
+
+  return (
+    <main className="min-h-screen bg-gray-100 p-10">
+
+      <div className="max-w-3xl mx-auto bg-white p-8 rounded-3xl shadow-lg">
+
+        <h1 className="text-4xl font-black mb-8">
+          Edit Profile
+        </h1>
+
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5"
         >
-          Save Changes
-        </button>
 
-      </form>
+          {profile.image && (
 
-    </div>
+            <img
+              src={profile.image}
+              alt="Profile"
+              className="w-40 h-40 rounded-full object-cover"
+            />
 
-  </main>
+          )}
 
-</ProtectedRoute>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              setImage(
+                e.target.files[0]
+              )
+            }
+            className="w-full border p-4 rounded-xl"
+          />
 
+          {image && (
 
-);
+            <img
+              src={URL.createObjectURL(
+                image
+              )}
+              alt="Preview"
+              className="w-40 h-40 rounded-full object-cover"
+            />
+
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-black text-white py-4 rounded-xl"
+          >
+            {loading
+              ? "Uploading..."
+              : "Save Changes"}
+          </button>
+
+        </form>
+
+      </div>
+
+    </main>
+  );
 }
